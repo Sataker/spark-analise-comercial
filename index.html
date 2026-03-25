@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Comercial com IA | Spark Assessoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FF8A5B;
+            --orange-dark: #E55A2B;
+            --black: #0A0A0B;
+            --dark: #1A1A1A;
+            --dark-2: #2D2D2D;
+            --gray: #6B7280;
+            --light: #F3F4F6;
+            --white: #FFFFFF;
+            --green: #10B981;
+            --red: #EF4444;
+            --yellow: #F59E0B;
+            --blue: #3B82F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== CANVAS SPARKS ========== */
+        #sparksCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            padding: 24px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        .logo span {
+            color: var(--white);
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            padding: 60px 0 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--orange);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 2.75rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+
+        /* ========== SECTIONS ========== */
+        .section {
+            padding: 80px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--orange);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        /* ========== COMO FUNCIONA ========== */
+        .steps-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            align-items: start;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            border-color: rgba(255, 107, 53, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .step-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .step-content p {
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .step-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .step-details ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step-details li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .step-details li svg {
+            width: 16px;
+            height: 16px;
+            color: var(--green);
+            flex-shrink: 0;
+        }
+
+        /* ========== O QUE A IA ANALISA ========== */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin: 0 auto;
+            }
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-card:hover {
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .analysis-card .icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: var(--orange);
+        }
+
+        .analysis-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .analysis-card p {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* ========== EXEMPLO RELATÓRIO ========== */
+        .report-example {
+            background: var(--dark);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .report-header {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .report-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-header h4 svg {
+            color: var(--orange);
+        }
+
+        .report-date {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .report-body {
+            padding: 24px;
+        }
+
+        .report-section {
+            margin-bottom: 24px;
+        }
+
+        .report-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .report-section h5 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .report-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .report-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metric {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.good { color: var(--green); }
+        .metric-value.warning { color: var(--yellow); }
+        .metric-value.bad { color: var(--red); }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .issue-item {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .issue-item svg {
+            color: var(--red);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .issue-item .text {
+            font-size: 14px;
+        }
+
+        .issue-item .text strong {
+            color: var(--white);
+        }
+
+        .recommendation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .recommendation-item {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .recommendation-item svg {
+            color: var(--green);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .recommendation-item .text {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* ========== CUSTOS API ========== */
+        .cost-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.02));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .cost-section h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cost-section h3 svg {
+            color: var(--blue);
+        }
+
+        .cost-section > p {
+            color: var(--gray);
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 600px) {
+            .cost-breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cost-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .cost-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .cost-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        .cost-card .value small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray);
+        }
+
+        .cost-card p {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 8px;
+        }
+
+        .cost-note {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .cost-note svg {
+            color: var(--yellow);
+            flex-shrink: 0;
+        }
+
+        .cost-note p {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        .cost-note strong {
+            color: var(--white);
+        }
+
+        /* ========== BENEFÍCIOS ========== */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: 32px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+        }
+
+        .benefit-card .icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--orange);
+        }
+
+        .benefit-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .benefit-card p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--orange);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sparksCanvas"></canvas>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">Spark<span>Assessoria</span></div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge animate-on-scroll">
+                Proposta Técnica — Análise Comercial com IA
+            </div>
+            <h1 class="animate-on-scroll">
+                Sistema de <span class="gradient-text">Análise Inteligente</span> de Conversas Comerciais
+            </h1>
+            <p class="hero-subtitle animate-on-scroll">
+                Integração com WhatsApp dos clientes + Inteligência Artificial que analisa cada conversa 
+                e identifica exatamente onde o processo comercial está falhando.
+            </p>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="section">
+        <div class="container">
+            <span class="section-label animate-on-scroll">Passo a Passo</span>
+            <h2 class="section-title animate-on-scroll">Como o sistema funciona</h2>
+
+            <div class="steps-grid">
+                <div class="step-card animate-on-scroll">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Integração com WhatsApp</h3>
+                        <p>
+                            Conectamos o WhatsApp Business do seu cliente ao sistema através da uazapi. 
+                            Todas as conversas passam a ser registradas automaticamente.
+                        </p>
+                        <div class="step-details">
+                            <ul>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Integração transparente — cliente continua usando WhatsApp normalmente
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Histórico completo de todas as conversas
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Dados seguros e criptografados
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card animate-on-scroll">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Definição do Processo Comercial</h3>
+                        <p>
+                            Mapeamos junto com você o processo comercial ideal do cliente: tempo máximo de resposta, 
+                            etapas da venda, perguntas obrigatórias, script de atendimento, etc.
+                        </p>
+                        <div class="step-details">
+                            <ul>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Tempo máximo de primeira resposta (ex: 5 minutos)
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Perguntas de qualificação obrigatórias
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Script de vendas e objeções
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Regras de follow-up
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card animate-on-scroll">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Análise com IA (GPT-4.1 Mini)</h3>
+                        <p>
+                            A cada conversa encerrada (ou sob demanda), a IA lê todo o histórico e compara 
+                            com o processo comercial definido. Ela identifica onde o atendente errou, 
+                            o que deixou de perguntar, se demorou pra responder, etc.
+                        </p>
+                        <div class="step-details">
+                            <ul>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Análise profunda de cada conversa
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Detecção de falhas no processo
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Sugestões de melhoria específicas
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card animate-on-scroll">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Relatório Automático</h3>
+                        <p>
+                            Você recebe um relatório detalhado com: métricas de atendimento, 
+                            problemas identificados, e recomendações práticas. Pode ser por conversa 
+                            ou um consolidado semanal/mensal.
+                        </p>
+                        <div class="step-details">
+                            <ul>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Relatório individual por conversa
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Dashboard consolidado semanal/mensal
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Envio automático por WhatsApp ou email
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- O QUE A IA ANALISA -->
+    <section class="section" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <span class="section-label animate-on-scroll">Inteligência Artificial</span>
+            <h2 class="section-title animate-on-scroll">O que a IA analisa em cada conversa</h2>
+
+            <div class="analysis-grid">
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Tempo de Resposta</h4>
+                    <p>Quanto tempo levou pra primeira resposta? E entre cada mensagem? Compara com o SLA definido.</p>
+                </div>
+
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h4>Qualidade do Atendimento</h4>
+                    <p>Tom de voz, cordialidade, clareza nas explicações, uso de emojis apropriados, personalização.</p>
+                </div>
+
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h4>Seguimento do Script</h4>
+                    <p>O atendente seguiu as etapas do processo? Fez as perguntas obrigatórias? Apresentou a solução corretamente?</p>
+                </div>
+
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <h4>Erros e Objeções</h4>
+                    <p>Identificou objeções do lead? Soube contornar? Cometeu erros técnicos ou de informação?</p>
+                </div>
+
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Qualificação do Lead</h4>
+                    <p>O lead era qualificado? Tinha perfil pra comprar? A IA avalia se o lead era bom ou não.</p>
+                </div>
+
+                <div class="analysis-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                    </div>
+                    <h4>Recomendações</h4>
+                    <p>O que o atendente deveria ter feito diferente? Sugestões práticas e específicas pra melhorar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXEMPLO DE RELATÓRIO -->
+    <section class="section">
+        <div class="container">
+            <span class="section-label animate-on-scroll">Visualização</span>
+            <h2 class="section-title animate-on-scroll">Exemplo de relatório gerado</h2>
+
+            <div class="report-example animate-on-scroll">
+                <div class="report-header">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Análise de Conversa #1847
+                    </h4>
+                    <span class="report-date">25/03/2026 — Lead: Maria Silva</span>
+                </div>
+                <div class="report-body">
+                    <div class="report-section">
+                        <h5>Métricas de Atendimento</h5>
+                        <div class="report-metrics">
+                            <div class="metric">
+                                <div class="metric-value bad">47min</div>
+                                <div class="metric-label">Primeira resposta</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value warning">6/10</div>
+                                <div class="metric-label">Qualidade geral</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value good">Sim</div>
+                                <div class="metric-label">Lead qualificado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h5>Problemas Identificados</h5>
+                        <div class="issue-list">
+                            <div class="issue-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <div class="text">
+                                    <strong>Tempo de resposta acima do SLA:</strong> Lead aguardou 47 minutos pela primeira resposta (meta: 5 min)
+                                </div>
+                            </div>
+                            <div class="issue-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <div class="text">
+                                    <strong>Pergunta de qualificação ignorada:</strong> Não perguntou o orçamento disponível do cliente
+                                </div>
+                            </div>
+                            <div class="issue-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <div class="text">
+                                    <strong>Sem follow-up:</strong> Conversa encerrou sem agendamento de próximo contato
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h5>Recomendações</h5>
+                        <div class="recommendation-list">
+                            <div class="recommendation-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <div class="text">Configurar notificações de novos leads para resposta imediata</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <div class="text">Revisar script: incluir pergunta sobre orçamento após identificar interesse</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <div class="text">Sempre encerrar com próximo passo definido (data/hora de retorno)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUSTOS DE API -->
+    <section class="section">
+        <div class="container">
+            <div class="cost-section animate-on-scroll">
+                <h3>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    Custos de Infraestrutura (API OpenAI)
+                </h3>
+                <p>
+                    O sistema utiliza a API da OpenAI com o modelo GPT-4.1 Mini para realizar as análises. 
+                    O custo é baseado no uso real — quanto mais conversas analisadas, maior o custo.
+                </p>
+
+                <div class="cost-breakdown">
+                    <div class="cost-card">
+                        <h4>Estimativa Mensal</h4>
+                        <div class="value">R$50 — R$100 <small>/mês</small></div>
+                        <p>Para volume típico de uma operação comercial (50-200 conversas/mês)</p>
+                    </div>
+                    <div class="cost-card">
+                        <h4>Modelo Utilizado</h4>
+                        <div class="value">GPT-4.1 Mini</div>
+                        <p>Melhor custo-benefício: rápido, inteligente e econômico</p>
+                    </div>
+                </div>
+
+                <div class="cost-note">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p>
+                        <strong>Importante:</strong> O custo pode variar pra mais ou pra menos dependendo da quantidade 
+                        de conversas analisadas e do tamanho médio de cada conversa. Operações com muito volume 
+                        podem ter custos maiores, enquanto operações menores podem ficar abaixo de R$50/mês.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFÍCIOS -->
+    <section class="section" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <span class="section-label animate-on-scroll">Resultados</span>
+            <h2 class="section-title animate-on-scroll">O que você ganha com isso</h2>
+
+            <div class="benefits-grid">
+                <div class="benefit-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Prova com Dados</h4>
+                    <p>Nunca mais "achismo". Você tem dados concretos pra mostrar onde está o problema.</p>
+                </div>
+
+                <div class="benefit-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <h4>Protege seu Trabalho</h4>
+                    <p>Quando o cliente reclamar dos leads, você mostra exatamente onde o atendimento falhou.</p>
+                </div>
+
+                <div class="benefit-card animate-on-scroll">
+                    <div class="icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Melhora Conversão</h4>
+                    <p>Com os insights da IA, o time comercial do cliente melhora e vende mais.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>Proposta preparada exclusivamente para <strong>Spark Assessoria</strong> — Março 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // Spark particles animation
+        const canvas = document.getElementById('sparksCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const sparks = [];
+        const sparkCount = 40;
+
+        for (let i = 0; i < sparkCount; i++) {
+            sparks.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedY: Math.random() * 0.3 + 0.1,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function animateSparks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            sparks.forEach(spark => {
+                ctx.beginPath();
+                ctx.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 107, 53, ${spark.opacity})`;
+                ctx.fill();
+
+                spark.y -= spark.speedY;
+
+                if (spark.y < -10) {
+                    spark.y = canvas.height + 10;
+                    spark.x = Math.random() * canvas.width;
+                }
+            });
+
+            requestAnimationFrame(animateSparks);
+        }
+        animateSparks();
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
